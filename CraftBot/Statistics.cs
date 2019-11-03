@@ -2,11 +2,33 @@
 {
     public class Statistics
     {
-        public int CommandsErrored { get; set; }
-        public int CommandsExecuted { get; set; }
+        public long CommandsErrored { get; set; }
+        public long CommandsExecuted { get; set; }
 
-        public int CommandsTotal => CommandsErrored + CommandsExecuted;
+        public long CommandsMistyped { get; set; }
 
-        public decimal ErrorRate => CommandsErrored / (decimal)CommandsTotal;
+        public long CommandsTotal => CommandsErrored + CommandsMistyped + CommandsExecuted;
+
+        public decimal ErrorRate
+        {
+            get
+            {
+                if (CommandsTotal == 0)
+                    return 0;
+
+                return CommandsErrored / (decimal)CommandsTotal;
+            }
+        }
+
+        public decimal MistypeRate
+        {
+            get
+            {
+                if (CommandsTotal == 0)
+                    return 0;
+
+                return CommandsMistyped / (decimal)CommandsTotal;
+            }
+        }
     }
 }
