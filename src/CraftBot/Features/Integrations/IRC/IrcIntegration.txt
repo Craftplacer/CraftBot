@@ -1,0 +1,191 @@
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using CraftBot.Extensions;
+using Craftplacer.IRC;
+using Craftplacer.IRC.Events;
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
+using Newtonsoft.Json;
+
+namespace CraftBot.Features.Integrations.IRC
+{
+    public class IrcIntegration : BaseExtension
+    {
+        private const string Nickname = "CraftBot";
+
+        public HashSet<Connection> Connections { get; private set; }
+        public Dictionary<string, IrcClient> IrcConnections { get; } = new Dictionary<string, IrcClient>();
+
+        public class Connection
+        {
+            public Connection(IrcIntegration integrator)
+            {
+                Integrator = integrator;
+            }
+
+            [JsonIgnore] public IrcIntegration Integrator { get; set; }
+
+            public DiscordPair Discord { get; set; }
+            public IrcPair Irc { get; set; }
+
+            [JsonIgnore]
+            public bool Reconnect { get; set; } = true;
+
+            [JsonIgnore]
+            public IrcClient IrcClient
+            {
+                get
+                {
+                    if (!Integrator.IrcConnections.ContainsKey(Irc.Host))
+                    {
+                        var client = new IrcClient();
+
+                        client.Welcome += OnWelcome;
+                        client.MessageReceived += OnMessageReceived;
+                        client.ClientDisconnected += OnClientDisconnected;
+                        client.Password = Irc.Password;
+
+                        Integrator.IrcConnections[Irc.Host] = client;
+                    }
+
+                    return Integrator.IrcConnections[Irc.Host];
+                }
+            }
+
+            private async Task OnWelcome(IrcEventArgs arg)
+            {
+                var connections = Integrator.Connections
+                    .Where(c => c.IrcClient == arg.Client && c.Reconnect);
+
+                foreach (var connection in connections)
+                {
+                    await arg.Client.JoinChannelAsync(connection.Irc.Channel);
+                    await connection.Discord.Webhook.ExecuteAsync(new DiscordWebhookBuilder { Content = $"Connected to {connection.Irc.Channel} on {connection.Irc.Host}" });
+                }
+            }
+
+            private async Task OnClientDisconnected(DisconnectedEventArgs arg)
+            {
+                var connections = Integrator.Connections.Where(c => c.IrcClient == arg.Client && c.Reconnect).ToList();
+
+                foreach (var webhook in connections.Select(connection => connection.Discord.Webhook))
+                    await webhook.ExecuteAsync(new DiscordWebhookBuilder { Content = "Connection lost... trying to reconnect." });
+
+                var ircHost = connections.First().Irc.Host;
+                await arg.Client.ConnectAsync(ircHost, 6667, Nickname, Nickname);
+            }
+
+            private async Task OnMessageReceived(MessageReceivedEventArgs arg)
+            {
+                var ircChannel = arg.Message.Source;
+                var connection = Integrator.Connections.FirstOrDefault(c => c.IrcClient == arg.Client && c.Irc.Channel == ircChannel);
+
+                if (connection == null)
+                    return;
+
+                var ircName = arg.Message.User.Split('!')[0];
+                var matchingMember = connection.Discord.Channel.Users.FirstOrDefault(u => u.Username == ircName);
+
+                var name = matchingMember?.Username ?? ircName;
+                var avatar = matchingMember?.AvatarUrl;
+                var message = arg.Message.Message.SanitizeMentions();
+
+                await connection.Discord.Webhook.ExecuteAsync(new DiscordWebhookBuilder
+                {
+                    AvatarUrl = avatar,
+                    Content = message,
+                    Username = name
+                });
+            }
+
+            public async Task EstablishAsync(DiscordClient client)
+            {
+                Discord.Guild = await client.GetGuildAsync(Discord.GuildId);
+                Discord.Channel = Discord.Guild.GetChannel(Discord.ChannelId);
+
+                var webhooks = await Discord.Channel.GetWebhooksAsync();
+                Discord.Webhook = webhooks.First(w => w.Id == Discord.WebhookId && w.User.Id == client.CurrentUser.Id);
+
+                await IrcClient.ConnectAsync(Irc.Host, 6667, Nickname, Nickname);
+            }
+
+            public async Task DisconnectAsync(string reason = null)
+            {
+                var safeToDisconnect = Integrator.Connections.All(c => c.IrcClient != IrcClient);
+
+                // TODO: Consider parting channel here.
+
+                if (!safeToDisconnect)
+                    return;
+
+                Reconnect = false;
+
+                await IrcClient.DisconnectAsync(reason);
+                IrcClient.Dispose();
+            }
+        }
+
+        protected override void Setup(DiscordClient client)
+        {
+            Client = client;
+
+            LoadConnections();
+
+            //client.Ready += ClientOnReady;
+            client.MessageCreated += ClientOnMessageCreated;
+            client.GuildDownloadCompleted += ClientOnGuildDownloadCompleted;
+        }
+
+        private async Task ClientOnGuildDownloadCompleted(GuildDownloadCompletedEventArgs e)
+        {
+            Logger.Info("Attempting to reconnect all IRC connections", "IRC");
+
+            foreach (var connection in Connections)
+                await connection.EstablishAsync(e.Client);
+
+            Logger.Info("Finished reconnecting", "IRC");
+        }
+
+        private async Task ClientOnMessageCreated(MessageCreateEventArgs e)
+        {
+            if (e.Channel.IsPrivate || e.Author.IsBot)
+                return;
+
+            var connection = GetConnection(e.Channel);
+
+            if (connection == null)
+                return; // No Irc Link found, skipping
+
+            var message = $"<{e.Author.Username}#{e.Author.Discriminator}> {e.Message.Content}";
+            await connection.IrcClient.SendMessageAsync(connection.Irc.Channel, message);
+        }
+
+        private async Task ClientOnReady(ReadyEventArgs e)
+        {
+            e.Client.Ready -= ClientOnReady;
+        }
+
+        public void LoadConnections()
+        {
+            var path = Path.Combine("config", "irc");
+            var connections = Helpers.GetJson(path, new HashSet<Connection>()) ?? new HashSet<Connection>();
+
+            foreach (var connection in connections)
+                connection.Integrator = this;
+
+            Connections = connections;
+        }
+
+        public void SaveConnections()
+        {
+            var path = Path.Combine("config", "irc");
+            Helpers.SaveJson(path, Connections);
+        }
+
+        public Connection GetConnection(DiscordChannel channel) => Connections.FirstOrDefault(c =>
+            c.Discord.GuildId == channel.GuildId && c.Discord.ChannelId == channel.Id);
+    }
+}

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="A:\Code\dotnet\CraftBot" t="IncludeFlat">
+      <e p="CraftBot" t="IncludeRecursive">
+        <e p="API" t="Include">
+          <e p="ApiException.cs" t="Include" />
+          <e p="YandereAPI.cs" t="Include" />
+          <e p="YanderePost.cs" t="Include" />
+        </e>
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Colors.cs" t="Include" />
+        <e p="Commands" t="Include">
+          <e p="BooruCommands.cs" t="Include" />
+          <e p="BotCommands.cs" t="Include" />
+          <e p="BotCommands.LocalizationCommands.cs" t="Include" />
+          <e p="GuildCommands.cs" t="Include" />
+          <e p="GuildCommands.DiscouseFeed.cs" t="Include" />
+          <e p="IrcCommands.txt" t="Include" />
+          <e p="MainCommands.cs" t="Include" />
+          <e p="ModerationCommands.cs" t="Include" />
+          <e p="ShitpostingCommands.cs" t="Include" />
+          <e p="ShitpostingCommands.TweetRenderer.cs" t="Include" />
+          <e p="UserCommands.Config.cs" t="Include" />
+          <e p="UserCommands.cs" t="Include" />
+        </e>
+        <e p="Config.cs" t="Include" />
+        <e p="Constants.cs" t="Include" />
+        <e p="CraftBot.csproj" t="IncludeRecursive" />
+        <e p="Database" t="Include">
+          <e p="GuildData.cs" t="Include" />
+          <e p="UserData.cs" t="Include" />
+          <e p="UserFeatures.cs" t="Include" />
+        </e>
+        <e p="Emoji.cs" t="Include" />
+        <e p="Extensions" t="Include">
+          <e p="DiscordExtensions.cs" t="Include" />
+          <e p="GeneralExtensions.cs" t="Include" />
+          <e p="GraphicsExtensions.cs" t="Include" />
+        </e>
+        <e p="Features" t="Include">
+          <e p="DiscourseFeed.cs" t="Include" />
+          <e p="Integrations" t="Include">
+            <e p="IRC" t="Include">
+              <e p="DiscordPair.cs" t="Include" />
+              <e p="IrcIntegration.txt" t="Include" />
+              <e p="IrcPair.cs" t="Include" />
+            </e>
+          </e>
+          <e p="Quoting.cs" t="Include" />
+          <e p="Shitposting.cs.txt" t="Include" />
+        </e>
+        <e p="GlobalSuppressions.cs" t="Include" />
+        <e p="Helpers.cs" t="Include" />
+        <e p="HelpFormatter.cs" t="Include" />
+        <e p="IrcIntegration.txt" t="Include" />
+        <e p="Localization" t="Include">
+          <e p="Language.cs" t="Include" />
+          <e p="LocalizationEngine.cs" t="Include" />
+        </e>
+        <e p="Logger.cs" t="Include" />
+        <e p="Model" t="Include">
+          <e p="ForbiddenTags.cs" t="Include" />
+          <e p="Gender.cs" t="Include" />
+          <e p="OneTimeNotices.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="CraftBot.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Program.Events.cs" t="Include" />
+        <e p="Properties" t="Include" />
+        <e p="Repositories" t="Include">
+          <e p="DatabaseRepository.cs" t="Include" />
+          <e p="GuildRepository.cs" t="Include" />
+          <e p="UserRepository.cs" t="Include" />
+        </e>
+        <e p="Statistics.cs" t="Include" />
+        <e p="TokenStore.cs" t="Include" />
+      </e>
+      <e p="CraftBot.sln" t="IncludeFlat" />
+      <e p="packages" t="ExcludeRecursive" />
+    </e>
+    <e p="A:\Code\dotnet\Craftplacer.Discourse" t="IncludeRecursive">
+      <e p="bin" t="ExcludeRecursive" />
+      <e p="Craftplacer.Discourse.csproj" t="IncludeRecursive" />
+      <e p="DiscourseApi.cs" t="Include" />
+      <e p="Model" t="Include">
+        <e p="DiscoursePost.cs" t="Include" />
+        <e p="DiscoursePoster.cs" t="Include" />
+        <e p="DiscoursePostStream.cs" t="Include" />
+        <e p="DiscourseTopic.cs" t="Include" />
+        <e p="DiscourseTopicList.cs" t="Include" />
+        <e p="DiscourseUser.cs" t="Include" />
+      </e>
+      <e p="obj" t="ExcludeRecursive">
+        <e p="Debug" t="Include">
+          <e p="netstandard2.1" t="Include">
+            <e p="Craftplacer.Discourse.AssemblyInfo.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="Responses" t="Include">
+        <e p="TopicResponse.cs" t="Include" />
+      </e>
+    </e>
+    <e p="A:\Code\dotnet\Craftplacer.IRC\Craftplacer.IRC" t="IncludeRecursive">
+      <e p="bin" t="ExcludeRecursive" />
+      <e p="CapabilityList.cs" t="Include" />
+      <e p="CapabilityState.cs" t="Include" />
+      <e p="Constants.cs" t="Include" />
+      <e p="Craftplacer.IRC.csproj" t="IncludeRecursive" />
+      <e p="Entities" t="Include">
+        <e p="IrcChannel.cs" t="Include" />
+        <e p="IrcEntity.cs" t="Include" />
+        <e p="IrcMessage.cs" t="Include" />
+        <e p="IrcNotice.cs" t="Include" />
+        <e p="IrcUser.cs" t="Include" />
+      </e>
+      <e p="Events" t="Include">
+        <e p="DisconnectedEventArgs.cs" t="Include" />
+        <e p="IrcEventArgs.cs" t="Include" />
+        <e p="MessageReceivedEventArgs.cs" t="Include" />
+        <e p="NoticeReceivedEventArgs.cs" t="Include" />
+        <e p="Raw" t="Include">
+          <e p="DisconnectedEventArgs.cs" t="Include" />
+          <e p="RawEventArgs.cs" t="Include" />
+          <e p="RawMessageReceivedEventArgs.cs" t="Include" />
+        </e>
+        <e p="UserJoinedEventArgs.cs" t="Include" />
+        <e p="UserPartedEventArgs.cs" t="Include" />
+      </e>
+      <e p="Exceptions" t="Include">
+        <e p="BadMessageException.cs" t="Include" />
+        <e p="ErreoneusNicknameException.cs" t="Include" />
+        <e p="IrcException.cs" t="Include" />
+        <e p="NicknameCollisionException.cs" t="Include" />
+        <e p="NicknameInUseException.cs" t="Include" />
+        <e p="NoNicknameGivenException.cs" t="Include" />
+      </e>
+      <e p="Helpers" t="Include">
+        <e p="AsyncExtensions.cs" t="Include" />
+        <e p="EventWaitEntry.cs" t="Include" />
+        <e p="StringTraverser.cs" t="Include" />
+        <e p="Utilities.cs" t="Include" />
+      </e>
+      <e p="IrcClient.cs" t="Include" />
+      <e p="IrcClient.Events.cs" t="Include" />
+      <e p="IrcClient.Handlers.cs" t="Include" />
+      <e p="Messages" t="Include">
+        <e p="CapabilityMessage.cs" t="Include" />
+        <e p="IrcMessage.cs" t="Include" />
+        <e p="JoinMessage.cs" t="Include" />
+        <e p="KillMessage.cs" t="Include" />
+        <e p="NickMessage.cs" t="Include" />
+        <e p="NoticeMessage.cs" t="Include" />
+        <e p="PartMessage.cs" t="Include" />
+        <e p="PassMessage.cs" t="Include" />
+        <e p="PrivateMessage.cs" t="Include" />
+        <e p="QuitMessage.cs" t="Include" />
+        <e p="RawMessage.cs" t="Include" />
+        <e p="TagMessage.cs" t="Include" />
+        <e p="TopicMessage.cs" t="Include" />
+        <e p="UserMessage.cs" t="Include" />
+      </e>
+      <e p="Model" t="Include" />
+      <e p="obj" t="ExcludeRecursive">
+        <e p="Debug" t="Include">
+          <e p="netcoreapp3.1" t="Include">
+            <e p="Craftplacer.IRC.AssemblyInfo.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="RawIrcClient.cs" t="Include" />
+      <e p="ServerReply.cs" t="Include" />
+    </e>
+    <e p="C:\Users\Craftplacer\AppData\local\JetBrains\Rider2020.1\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Craftplacer\AppData\local\JetBrains\Rider2020.1\resharper-host\local\Transient\ReSharperHost\v201\SolutionCaches\_CraftBot.-379916966.00" t="ExcludeRecursive" />
+    <e p="C:\Users\Craftplacer\AppData\Roaming\JetBrains\Rider2020.1\consoles\db" t="IncludeRecursive" />
+    <e p="C:\Users\Craftplacer\AppData\Roaming\JetBrains\Rider2020.1\Extensions" t="IncludeRecursive" />
+  </component>
+</project>

@@ -1,0 +1,21 @@
+﻿using IrcDotNet;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CraftBot.Features.Integrations
+{
+    public class IrcIntegration
+    {
+        public Dictionary<string, StandardIrcClient> Clients = new Dictionary<string, StandardIrcClient>();
+
+        public IrcIntegration()
+        {
+            Clients.Add("", new StandardIrcClient());
+            var registrationInfo = new IrcUserRegistrationInfo();
+            registrationInfo.UserModes = 
+            var client = Clients[0].Connect("", true, registrationInfo);
+
+        }
+    }
+}

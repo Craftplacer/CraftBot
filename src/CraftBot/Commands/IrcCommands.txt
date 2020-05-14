@@ -1,0 +1,159 @@
+﻿using System;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using CraftBot.Features.Integrations.IRC;
+using CraftBot.Localization;
+using CraftBot.Repositories;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+
+namespace CraftBot.Commands
+{
+    [Group("irc")]
+    [RequireGuild]
+    public class IrcCommands : BaseCommandModule
+    {
+        public LocalizationEngine Localization { get; set; }
+        public UserRepository UserRepository { get; set; }
+
+        [Command("add")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        [RequireBotPermissions(Permissions.ManageChannels | Permissions.ManageWebhooks)]
+        public async Task Add(CommandContext context, DiscordChannel discordChannel, string host, string ircChannel)
+        {
+            var webhooks = await discordChannel.GetWebhooksAsync();
+            var webhook = webhooks.SingleOrDefault(w => w.User == context.Client.CurrentUser && w.Name == "IRC");
+
+            if (webhook == null)
+                webhook = await discordChannel.CreateWebhookAsync("IRC");
+
+            var integrator = context.Client.GetExtension<IrcIntegration>();
+
+            var connection = new IrcIntegration.Connection(integrator)
+            {
+                Discord = new DiscordPair(discordChannel, webhook),
+                Irc = new IrcPair(host, ircChannel)
+            };
+
+            integrator.Connections.Add(connection);
+            await connection.EstablishAsync(context.Client);
+            integrator.SaveConnections();
+        }
+
+        [Command("password")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task ChangePassword(CommandContext context, DiscordChannel channel)
+        {
+            var interactivity = context.Client.GetExtension<InteractivityExtension>();
+
+            var language = UserRepository.Get(context.User).GetLanguage(Localization);
+            var dmChannel = await context.Member.CreateDmChannelAsync();
+            var integrator = context.Client.GetExtension<IrcIntegration>();
+            var connection = integrator.GetConnection(channel);
+
+            if (connection.Irc.Password != null)
+            {
+                connection.Irc.Password = null;
+                connection.Integrator.SaveConnections();
+
+                await context.RespondAsync(embed: new DiscordEmbedBuilder
+                {
+                    Title = language["irc.password.cleared"]
+                });
+                return;
+            }
+
+            await context.RespondAsync(embed: new DiscordEmbedBuilder
+            {
+                Title = language["irc.password.checkdms"]
+            });
+
+            var message = await dmChannel.SendMessageAsync(embed: new DiscordEmbedBuilder
+            {
+                Title = language["irc.password.enterpassword"]
+            });
+
+            var result = await interactivity.WaitForMessageAsync(m => m.Channel == dmChannel && m.Author == context.User, TimeSpan.FromMinutes(1));
+            if (result.Result != null)
+            {
+                connection.Irc.Password = connection.IrcClient.Password = result.Result.Content;
+
+                integrator.SaveConnections();
+
+                await message.ModifyAsync(embed: new DiscordEmbedBuilder
+                {
+                    Title = language["irc.password.passwordset", "**`********`**"]
+                }.Build());
+            }
+        }
+
+        [GroupCommand]
+        [Command("view")]
+        public async Task View(CommandContext context)
+        {
+            var embed = new DiscordEmbedBuilder
+            {
+                Title = "IRC Integrations",
+                Color = Colors.Indigo500
+            };
+
+            var integrator = context.Client.GetExtension<IrcIntegration>();
+            var currentConnection = integrator.GetConnection(context.Channel);
+
+            embed.AddField("Connected to this channel",
+                currentConnection == null ? "*none*" : _getLine(currentConnection));
+
+            var otherConnections = integrator.Connections.Where(c => c != currentConnection && c.Discord.Guild == context.Guild).ToList();
+
+            if (otherConnections.Any())
+            {
+                var list = new StringBuilder();
+
+                foreach (var connection in otherConnections)
+                    list.AppendLine(_getLine(connection));
+
+                embed.AddField("Connected to other channels", list.ToString());
+            }
+            else
+            {
+                embed.AddField("Connected to other channels", "*none*");
+            }
+
+            await context.RespondAsync(embed: embed);
+        }
+
+        [Command("remove")]
+        public async Task Remove(CommandContext context, DiscordChannel channel)
+        {
+            var integrator = context.Client.GetExtension<IrcIntegration>();
+            var currentConnection = integrator.GetConnection(context.Channel);
+
+            if (currentConnection == null)
+                return; //TODO
+
+            await currentConnection.DisconnectAsync("Connection is being removed");
+
+            integrator.Connections.Remove(currentConnection);
+            integrator.SaveConnections();
+        }
+
+        private static string _getLine(IrcIntegration.Connection connection)
+        {
+            var builder = new StringBuilder();
+
+            builder.Append(connection.IrcClient.Connected ? Emoji.IconCheck : Emoji.IconClose);
+            builder.Append($" `{connection.Irc.Channel}` @ `{connection.Irc.Host}`");
+
+            if (connection.Irc.Password != null)
+                builder.Append(' ' + Emoji.IconKey);
+
+            builder.AppendLine();
+
+            return builder.ToString();
+        }
+    }
+}
