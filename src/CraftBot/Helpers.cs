@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using CraftBot.Localization;
 using Newtonsoft.Json;
+using Sentry;
 
 namespace CraftBot
 {
@@ -40,7 +42,31 @@ namespace CraftBot
             File.WriteAllText(fileName, json);
         }
 
+        /// <summary>
+        /// Logs the provided exception including the detail given and submits it to Sentry.
+        /// </summary>
+        public static void ReportException(Exception exception, string module, string detail = null)
+        {
+            if (!string.IsNullOrWhiteSpace(detail))
+                Logger.Error(detail, module);
 
-        public static TimeSpan GetUptime() => DateTime.Now - Program.Statistics.CurrentStartTime;
+            Logger.Error(exception, module);
+
+            SentrySdk.ConfigureScope(scope =>
+            {
+                scope.SetTag("module", module);
+                scope.SetExtra("detail", detail);
+
+                SentrySdk.CaptureException(exception);
+            });
+        }
+
+        public static void SaveLanguage(Language language)
+        {
+            var json = language.ToJson();
+            var path = Path.Combine("lang", language.Code + ".json");
+
+            File.WriteAllText(path, json);
+        }
     }
 }

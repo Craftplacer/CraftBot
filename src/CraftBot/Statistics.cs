@@ -27,7 +27,6 @@ namespace CraftBot
         public long CommandsTotal => CommandsErrored + CommandsMistyped + CommandsExecuted;
 
         public List<Tuple<DateTime, Exception>> Errors = new List<Tuple<DateTime, Exception>>();
-        public List<Tuple<DateTime, string>> Graph { get; } = new List<Tuple<DateTime, string>>();
 
         [JsonIgnore, BsonIgnore]
         public decimal ErrorRate

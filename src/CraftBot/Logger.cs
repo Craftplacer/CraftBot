@@ -4,6 +4,8 @@ namespace CraftBot
 {
     public static class Logger
     {
+        public static void Verbose(string message, string module = null) => _writeLine(module, ConsoleColor.DarkGray, message, ConsoleColor.DarkGray);
+
         public static void Info(string message, string module = null) => _writeLine(module, ConsoleColor.DarkGray, message, ConsoleColor.Gray);
 
         public static void Error(string message, string module = null) => _writeLine(module, ConsoleColor.DarkRed, message, ConsoleColor.Red);

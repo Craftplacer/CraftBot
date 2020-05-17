@@ -5,12 +5,14 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using CraftBot.Discord;
 using CraftBot.Extensions;
 using CraftBot.Localization;
 using CraftBot.Repositories;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 
 namespace CraftBot.Commands
@@ -27,7 +29,8 @@ namespace CraftBot.Commands
         public async Task Info(CommandContext context)
         {
             var language = UserRepository.Get(context.User).GetLanguage(Localization);
-
+            var statistics = context.Services.GetService<Statistics>();
+            
             string getMemoryUsage() => $"{Math.Round(GC.GetTotalMemory(false) / 1000000f, 2)} MB";
             static string getOS()
             {
@@ -73,9 +76,10 @@ namespace CraftBot.Commands
                 {Emoji.IconTextureBox} {language.GetCounter(context.Client.ShardCount, "shards")}",
                 true
             );
+            
             embed.AddField(
                 language["bot.info.appinfo"],
-                @$"{Emoji.IconClockOutline} {Helpers.GetUptime().GetString(language)}
+                @$"{Emoji.IconClockOutline} {(DateTime.Now - statistics.CurrentStartTime).GetString(language)}
                 {Emoji.IconMonitor} {getOS()}
                 {Emoji.IconDsharpplus} v{context.Client.VersionString}
                 {Emoji.IconMemory} {getMemoryUsage()}",
@@ -132,9 +136,12 @@ namespace CraftBot.Commands
         [RequireOwner]
         public async Task Stop(CommandContext context)
         {
+            var bot = context.Services.GetService<DiscordBot>();
+            
             await context.Client.UpdateStatusAsync(new DiscordActivity("Shutting down..."), UserStatus.DoNotDisturb);
             await context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👋"));
-            await Program.Shutdown();
+
+            await bot.StopAsync();
         }
 
         [Command("hopoff")]
@@ -143,6 +150,8 @@ namespace CraftBot.Commands
         [RequireOwner]
         public async Task HopOff(CommandContext context)
         {
+            var bot = context.Services.GetService<DiscordBot>();
+            
             var filePath = typeof(Program).Assembly.Location;
             var arguments = string.Join(' ', Environment.GetCommandLineArgs());
 
@@ -165,7 +174,7 @@ namespace CraftBot.Commands
 
             Process.Start(startInfo);
 
-            await Program.Shutdown();
+            await bot.StopAsync();
         }
 
         [Command("attach")]
@@ -233,7 +242,8 @@ namespace CraftBot.Commands
         public async Task ViewStatistics(CommandContext context)
         {
             var language = UserRepository.Get(context.User).GetLanguage(Localization);
-
+            var statistics = context.Services.GetService<Statistics>();
+            
             var embed = new DiscordEmbedBuilder
             {
                 Color = Colors.Indigo500,
@@ -241,28 +251,28 @@ namespace CraftBot.Commands
             }
                 .AddField(
                     language["bot.stats.commandsrecognized"],
-                    $"{Program.Statistics.CommandsTotal}"
+                    $"{statistics.CommandsTotal}"
                 )
                 .AddField(
                     language["bot.stats.commandsexecuted"],
-                    $"{Program.Statistics.CommandsExecuted}", true
+                    $"{statistics.CommandsExecuted}", true
                 )
                 .AddField(
                     language["bot.stats.errorrate"],
-                    $"{Program.Statistics.CommandsErrored} ({Math.Round(Program.Statistics.ErrorRate * 100, 2)}%)"
+                    $"{statistics.CommandsErrored} ({Math.Round(statistics.ErrorRate * 100, 2)}%)"
                 )
                 .AddField(
                     language["bot.stats.mistyperate"],
-                    $"{Program.Statistics.CommandsMistyped} ({Math.Round(Program.Statistics.MistypeRate * 100, 2)}%)",
+                    $"{statistics.CommandsMistyped} ({Math.Round(statistics.MistypeRate * 100, 2)}%)",
                     true
                 )
                 .AddField(
                     language["bot.stats.messagesquoted"],
-                    Program.Statistics.MessagesQuoted.ToString()
+                    statistics.MessagesQuoted.ToString()
                 )
                 .WithFooter(
                     language["bot.stats.since",
-                        (DateTime.Now - Program.Statistics.StartTime).GetString(language)]
+                        (DateTime.Now - statistics.StartTime).GetString(language)]
                 );
 
             await context.RespondAsync("graph.png", embed: embed);

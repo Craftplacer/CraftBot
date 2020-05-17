@@ -188,7 +188,7 @@ namespace CraftBot.Commands
                 var oldValue = language.ContainsKey(key) ? language[key] : null;
 
                 language[key] = value;
-                Program.SaveLanguage(language);
+                Helpers.SaveLanguage(language);
 
                 await context.RespondAsync(
                     embed: new DiscordEmbedBuilder
@@ -216,7 +216,7 @@ namespace CraftBot.Commands
                 }
 
                 language.Authors.Add(user.Id);
-                Program.SaveLanguage(language);
+                Helpers.SaveLanguage(language);
 
                 await context.RespondAsync(embed: new DiscordEmbedBuilder
                 {

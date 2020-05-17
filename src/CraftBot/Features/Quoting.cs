@@ -14,15 +14,17 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CraftBot.Repositories;
 using DSharpPlus.CommandsNext;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace CraftBot.Features
 {
     public class Quoting : BaseExtension
     {
-        private readonly string IdPattern = "(>>[0-9]{18})";
-        private readonly string LinkPattern = @"http.:\/\/.*discordapp\.com\/channels\/([0-9]{18})\/([0-9]{18})\/([0-9]{18})";
+        private readonly Regex _idPattern = new Regex("(>>[0-9]{18})", RegexOptions.Compiled);
+        private readonly Regex _linkPattern = new Regex(@"http.:\/\/.*discordapp\.com\/channels\/([0-9]{18})\/([0-9]{18})\/([0-9]{18})", RegexOptions.Compiled);
 
         private UserRepository UserRepository { get; set; }
+        private Statistics Statistics { get; set; }
 
         protected override void Setup(DiscordClient client)
         {
@@ -30,7 +32,8 @@ namespace CraftBot.Features
             client.MessageCreated += Client_MessageCreated;
 
             var extension = client.GetExtension<CommandsNextExtension>();
-            UserRepository = (UserRepository)extension.Services.GetService(typeof(UserRepository));
+            UserRepository = extension.Services.GetService<UserRepository>();
+            Statistics = extension.Services.GetService<Statistics>();
         }
 
         private async Task Client_MessageCreated(MessageCreateEventArgs e)
@@ -41,8 +44,8 @@ namespace CraftBot.Features
             var data = UserRepository.Get(e.Author);
             var quotingEnabled = data.Features.HasFlag(UserFeatures.Quoting);
 
-            var idMatches = Regex.Matches(e.Message.Content, IdPattern);
-            var linkMatches = Regex.Matches(e.Message.Content, LinkPattern);
+            var idMatches = _idPattern.Matches(e.Message.Content);
+            var linkMatches = _linkPattern.Matches(e.Message.Content);
 
             var commandsNext = e.Client.GetExtension<CommandsNextExtension>();
             var language = data.GetLanguage((LocalizationEngine)commandsNext.Services.GetService(typeof(LocalizationEngine)));
@@ -94,8 +97,8 @@ namespace CraftBot.Features
 
                 if (!message.MessageType.HasValue || message.MessageType != MessageType.Default)
                     continue;
-
-                Program.Statistics.MessagesQuoted++;
+                
+                // Program.Statistics.MessagesQuoted++;
                 var embed = await GetEmbedAsync(message);
                 await e.Message.RespondAsync(embed: embed);
 
@@ -178,7 +181,7 @@ namespace CraftBot.Features
 
                 var embed = await GetEmbedAsync(message);
                 await e.Message.RespondAsync(content, embed: embed);
-                Program.Statistics.MessagesQuoted++;
+                Statistics.MessagesQuoted++;
 
                 // stop here
                 return;

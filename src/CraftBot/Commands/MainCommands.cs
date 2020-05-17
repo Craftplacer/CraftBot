@@ -35,27 +35,9 @@ namespace CraftBot.Commands
             return new Random(GetIntegerSeed());
         }
 
-        [Command("roll")]
-        [Description("Rolls the dice")]
-        public async Task Roll(CommandContext context, [RemainingText] string seed = "")
-        {
-            const int rollMax = 100;
-
-            var embed = new DiscordEmbedBuilder
-            {
-                Title = "The totally fair dice\\™",
-                Description = "Rolling the dice..."
-            };
-            var message = await context.RespondAsync(embed: embed);
-
-            await Task.Delay(Random.Next(1, 3) * 1000);
-            embed.WithDescription($"The dice has rolled a {_getRandom(seed).Next(1, rollMax)}!");
-            await message.ModifyAsync(embed: embed.Build());
-        }
-
         [Command("8ball")]
         [Description("Ask the 8-Ball.")]
-        public async Task Ask8Ball(CommandContext context, [RemainingText] string seed = "")
+        public async Task Ask8Ball(CommandContext context, [RemainingText] string question = "")
         {
             var answers = new[]
             {
@@ -79,7 +61,7 @@ namespace CraftBot.Commands
             var message = await context.RespondAsync(embed: embed);
 
             await Task.Delay(Random.Next(1, 3) * 1000);
-            embed.WithDescription(answers.Random(_getRandom(seed)));
+            embed.WithDescription(answers.Random(_getRandom(question)));
             await message.ModifyAsync(embed: embed.Build());
         }
 

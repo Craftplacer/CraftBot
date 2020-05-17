@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CraftBot", "CraftBot\CraftBot.csproj", "{807DE6AB-AEED-4DFD-B7BE-A8B84A9B497A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Craftplacer.IRC", "..\Craftplacer.IRC\Craftplacer.IRC\Craftplacer.IRC.csproj", "{BB2E6A43-C0F3-4F70-827D-B3557C66DA2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Craftplacer.IRC", "..\..\Craftplacer.IRC\Craftplacer.IRC\Craftplacer.IRC.csproj", "{BB2E6A43-C0F3-4F70-827D-B3557C66DA2B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Craftplacer.Discourse", "..\Craftplacer.Discourse\Craftplacer.Discourse.csproj", "{D63DB80C-4759-4E5E-95F3-E5485266D726}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Craftplacer.Discourse", "..\..\Craftplacer.Discourse\Craftplacer.Discourse.csproj", "{D63DB80C-4759-4E5E-95F3-E5485266D726}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

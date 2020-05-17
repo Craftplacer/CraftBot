@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="0aad421c-3046-4d47-bf0f-3789094776ad" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/CraftBot/Localization/LocalizationEngine.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Config.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Program.Events.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9ADABE20-BD9E-49F8-9795-939B74F572E5/6e/3435892d/CommandBuilder.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/../../Craftplacer.IRC/Craftplacer.IRC/Entities/IrcMessage.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Helpers.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9ADABE20-BD9E-49F8-9795-939B74F572E5/87/d979679b/Command.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/IRC/IrcBot.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Statistics.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Discord/CommonDiscordUser.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Discord/CommonDiscordMessage.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Common/Commands/CommandModule.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Program.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Common/CommonCommandContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Common/CommonUser.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/IRC/CommonIrcMessage.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Common/CommonMessage.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/C33AFD71-6EE0-4892-B8AD-69B81D88AE1C/1E0/ExceptionDispatchInfo.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Discord/DiscordBot.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/SubBot.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Logger.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9ADABE20-BD9E-49F8-9795-939B74F572E5/1d/f1e6f8a0/CommandOverloadBuilder.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/IStartable.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/BotManager.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/9ADABE20-BD9E-49F8-9795-939B74F572E5/5a/289a7055/RequirePermissionsAttribute.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Commands/BotCommands.LocalizationCommands.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Commands/GuildCommands.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Commands/BotCommands.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Commands/MainCommands.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Commands/BooruCommands.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Features/DiscourseFeed.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/CraftBot/Features/Quoting.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/E74813C1-8B4D-483F-A6E7-BEAB0520D2EF/1B/Delegate.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/E74813C1-8B4D-483F-A6E7-BEAB0520D2EF/1A/Delegate.CoreCLR.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/CraftBot/Helpers.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Common/CommonUser.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Common/Commands/Commands.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Common/Commands/CommandsModule.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Config.cs" />
+        <option value="$PROJECT_DIR$/../../Craftplacer.IRC/Craftplacer.IRC/Entities/IrcMessage.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Common/CommonCommandContext.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Commands/MainCommands.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/IRC/IrcBot.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Discord/CommonDiscordUser.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Common/CommonMessage.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Discord/CommonDiscordMessage.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/IRC/CommonIrcMessage.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Program.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/BotManager.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Discord/DiscordBot.cs" />
+        <option value="$PROJECT_DIR$/CraftBot/Common/Commands/CommandModule.cs" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="file.status.colors" />
+  </component>
+  <component name="RunManager">
+    <configuration name="CraftBot" type="DotNetProject" factoryName=".NET Project">
+      <option name="EXE_PATH" value="" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="PASS_PARENT_ENVS" value="1" />
+      <option name="USE_EXTERNAL_CONSOLE" value="0" />
+      <option name="USE_MONO" value="0" />
+      <option name="RUNTIME_ARGUMENTS" value="" />
+      <option name="PROJECT_PATH" value="$PROJECT_DIR$/CraftBot/CraftBot.csproj" />
+      <option name="PROJECT_EXE_PATH_TRACKING" value="1" />
+      <option name="PROJECT_ARGUMENTS_TRACKING" value="1" />
+      <option name="PROJECT_WORKING_DIRECTORY_TRACKING" value="1" />
+      <option name="PROJECT_KIND" value="DotNetCore" />
+      <option name="PROJECT_TFM" value="" />
+      <method v="2">
+        <option name="Build" />
+      </method>
+    </configuration>
+  </component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state width="475" height="466" key="DebuggerActiveHint" timestamp="1589703589764">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="475" height="466" key="DebuggerActiveHint/0.30.1920.1050@0.30.1920.1050" timestamp="1589703589764" />
+    <state width="1921" height="360" key="GridCell.Tab.0.bottom" timestamp="1589704468921">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.0.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468921" />
+    <state width="1921" height="360" key="GridCell.Tab.0.center" timestamp="1589704468921">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.0.center/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468921" />
+    <state width="1921" height="360" key="GridCell.Tab.0.left" timestamp="1589704468921">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.0.left/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468921" />
+    <state width="1921" height="360" key="GridCell.Tab.0.right" timestamp="1589704468921">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.0.right/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468921" />
+    <state width="1921" height="360" key="GridCell.Tab.1.bottom" timestamp="1589704468922">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.1.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468922" />
+    <state width="1921" height="360" key="GridCell.Tab.1.center" timestamp="1589704468921">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.1.center/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468921" />
+    <state width="1921" height="360" key="GridCell.Tab.1.left" timestamp="1589704468921">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.1.left/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468921" />
+    <state width="1921" height="360" key="GridCell.Tab.1.right" timestamp="1589704468921">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.1.right/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468921" />
+    <state width="1921" height="360" key="GridCell.Tab.2.bottom" timestamp="1589704468922">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.2.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468922" />
+    <state width="1921" height="360" key="GridCell.Tab.2.center" timestamp="1589704468922">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.2.center/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468922" />
+    <state width="1921" height="360" key="GridCell.Tab.2.left" timestamp="1589704468922">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.2.left/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468922" />
+    <state width="1921" height="360" key="GridCell.Tab.2.right" timestamp="1589704468922">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.2.right/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468922" />
+    <state width="1921" height="360" key="GridCell.Tab.3.bottom" timestamp="1589704468923">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.3.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468923" />
+    <state width="1921" height="360" key="GridCell.Tab.3.center" timestamp="1589704468922">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.3.center/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468922" />
+    <state width="1921" height="360" key="GridCell.Tab.3.left" timestamp="1589704468922">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.3.left/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468922" />
+    <state width="1921" height="360" key="GridCell.Tab.3.right" timestamp="1589704468923">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.3.right/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468923" />
+    <state width="1921" height="360" key="GridCell.Tab.4.bottom" timestamp="1589704468923">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.4.bottom/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468923" />
+    <state width="1921" height="360" key="GridCell.Tab.4.center" timestamp="1589704468923">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.4.center/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468923" />
+    <state width="1921" height="360" key="GridCell.Tab.4.left" timestamp="1589704468923">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.4.left/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468923" />
+    <state width="1921" height="360" key="GridCell.Tab.4.right" timestamp="1589704468923">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state width="1921" height="360" key="GridCell.Tab.4.right/0.30.1920.1050@0.30.1920.1050" timestamp="1589704468923" />
+    <state x="792" y="262" key="RiderGenerateDialog" timestamp="1589701692594">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state x="792" y="262" key="RiderGenerateDialog/0.30.1920.1050@0.30.1920.1050" timestamp="1589701692594" />
+    <state x="461" y="200" key="SettingsEditor" timestamp="1589690136688">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state x="461" y="200" key="SettingsEditor/0.30.1920.1050@0.30.1920.1050" timestamp="1589690136688" />
+    <state x="616" y="208" width="672" height="676" key="search.everywhere.popup" timestamp="1589701676508">
+      <screen x="0" y="30" width="1920" height="1050" />
+    </state>
+    <state x="616" y="208" width="672" height="676" key="search.everywhere.popup/0.30.1920.1050@0.30.1920.1050" timestamp="1589701676508" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/CraftBot/Discord/DiscordBot.cs</url>
+          <line>192</line>
+          <properties documentPath="$PROJECT_DIR$/CraftBot/Discord/DiscordBot.cs" initialLine="192">
+            <startOffsets>
+              <option value="5851" />
+            </startOffsets>
+            <endOffsets>
+              <option value="5858" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
