@@ -11,13 +11,12 @@
 
   <ItemGroup>
     <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00697" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00697" />
     <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00697" />
     <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-nightly-00653" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.23" />
     <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="LiteDB" Version="5.0.7" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0-preview.3.20215.2" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.1" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0-preview.3.20214.6" />
     <PackageReference Include="Qmmands" Version="3.1.2" />
     <PackageReference Include="Sentry" Version="2.1.2-beta4" />
@@ -25,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Discord\Commands\Checks" />
     <Folder Include="Features\Integrations\" />
     <Folder Include="Properties\" />
   </ItemGroup>

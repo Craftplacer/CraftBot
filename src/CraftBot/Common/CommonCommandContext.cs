@@ -4,17 +4,16 @@ using Qmmands;
 
 namespace CraftBot.Common
 {
-	public class CommonCommandContext : CommandContext
+	public abstract class CommonCommandContext : CommandContext
 	{
-		public CommonCommandContext(CommonMessage message) : base(null)
+		public CommonCommandContext(IServiceProvider serviceProvider = null) : base(serviceProvider)
 		{
-			Message = message;
 		}
 
-		public CommonUser User => Message.Author;
+		public CommonUser CommonUser => CommonMessage.Author;
 		
-		public CommonMessage Message { get; }
+		public abstract CommonMessage CommonMessage { get; }
 
-		public Task RespondAsync(string message) => Message.RespondAsync(message);
+		public abstract Task RespondAsync(string message);
 	}
 }

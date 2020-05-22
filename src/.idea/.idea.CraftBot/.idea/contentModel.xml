@@ -5,6 +5,7 @@
       <e p="CraftBot" t="IncludeRecursive">
         <e p="API" t="Include">
           <e p="ApiException.cs" t="Include" />
+          <e p="LightshotBot.cs" t="Include" />
           <e p="YandereAPI.cs" t="Include" />
           <e p="YanderePost.cs" t="Include" />
         </e>
@@ -12,18 +13,10 @@
         <e p="BotManager.cs" t="Include" />
         <e p="Colors.cs" t="Include" />
         <e p="Commands" t="Include">
-          <e p="BooruCommands.cs" t="Include" />
-          <e p="BotCommands.cs" t="Include" />
-          <e p="BotCommands.LocalizationCommands.cs" t="Include" />
-          <e p="GuildCommands.cs" t="Include" />
-          <e p="GuildCommands.DiscouseFeed.cs" t="Include" />
+          <e p="BooruCommands.txt" t="Include" />
           <e p="IrcCommands.txt" t="Include" />
-          <e p="MainCommands.cs" t="Include" />
-          <e p="ModerationCommands.cs" t="Include" />
-          <e p="ShitpostingCommands.cs" t="Include" />
           <e p="ShitpostingCommands.TweetRenderer.cs" t="Include" />
-          <e p="UserCommands.Config.cs" t="Include" />
-          <e p="UserCommands.cs" t="Include" />
+          <e p="ShitpostingCommands.txt" t="Include" />
         </e>
         <e p="Common" t="Include">
           <e p="Commands" t="Include">
@@ -42,8 +35,29 @@
           <e p="UserFeatures.cs" t="Include" />
         </e>
         <e p="Discord" t="Include">
-          <e p="CommonDiscordMessage.cs" t="Include" />
-          <e p="CommonDiscordUser.cs" t="Include" />
+          <e p="Commands" t="Include">
+            <e p="BotCommandModule.cs" t="Include" />
+            <e p="Checks" t="Include">
+              <e p="BotOwnerOnlyAttribute.cs" t="Include" />
+              <e p="GuildOnlyAttribute.cs" t="Include" />
+              <e p="GuildOwnerOnlyAttribute.cs" t="Include" />
+              <e p="PrivateOnlyAttribute.cs" t="Include" />
+              <e p="RequireBotPermissionsAttribute.cs" t="Include" />
+              <e p="RequireNsfwAttribute.cs" t="Include" />
+              <e p="RequireUserPermissions.cs" t="Include" />
+            </e>
+            <e p="CommandModule.cs" t="Include" />
+            <e p="DiscordCommandContext.cs" t="Include" />
+            <e p="GuildCommandModule.cs" t="Include" />
+            <e p="LightshotCommand.txt" t="Include" />
+            <e p="ModerationCommandModule.cs" t="Include" />
+            <e p="SpacifyCommand.txt" t="Include" />
+            <e p="UserCommandModule.cs" t="Include" />
+          </e>
+          <e p="Common" t="Include">
+            <e p="CommonDiscordMessage.cs" t="Include" />
+            <e p="CommonDiscordUser.cs" t="Include" />
+          </e>
           <e p="DiscordBot.cs" t="Include" />
         </e>
         <e p="Emoji.cs" t="Include" />
@@ -66,10 +80,18 @@
         </e>
         <e p="GlobalSuppressions.cs" t="Include" />
         <e p="Helpers.cs" t="Include" />
-        <e p="HelpFormatter.cs" t="Include" />
+        <e p="HelpFormatter.txt" t="Include" />
         <e p="IRC" t="Include">
-          <e p="CommonIrcMessage.cs" t="Include" />
+          <e p="Commands" t="Include">
+            <e p="IrcCommandContext.cs" t="Include" />
+            <e p="IrcCommandModule.cs" t="Include" />
+          </e>
+          <e p="Common" t="Include">
+            <e p="CommonIrcMessage.cs" t="Include" />
+            <e p="CommonIrcUser.cs" t="Include" />
+          </e>
           <e p="IrcBot.cs" t="Include" />
+          <e p="IrcHostInformation.cs" t="Include" />
         </e>
         <e p="IrcIntegration.txt" t="Include" />
         <e p="IStartable.cs" t="Include" />

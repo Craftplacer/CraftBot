@@ -22,6 +22,8 @@ namespace CraftBot.Discord
 			}
 		}
 
+		public override string Mention => DiscordUser.Mention;
+
 		public override async Task MessageAsync(string message)
 		{
 			if (!(DiscordUser is DiscordMember member))

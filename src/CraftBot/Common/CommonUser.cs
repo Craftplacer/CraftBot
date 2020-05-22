@@ -11,6 +11,11 @@ namespace CraftBot.Common
 		
 		public abstract string Nickname { get; }
 
+		/// <summary>
+		/// A string of text that causes this user to be notified when included.
+		/// </summary>
+		public abstract string Mention { get; }
+		
 		public abstract Task MessageAsync(string message);
 	}
 }

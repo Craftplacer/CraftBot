@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using CraftBot.Discord;
 using CraftBot.IRC;
-using Sentry;
 
 namespace CraftBot
 {
@@ -19,8 +18,8 @@ namespace CraftBot
             Logger.Info("CraftBot v3", "CraftBot");
 
             _manager = new BotManager();
-            _manager.AddBot(new DiscordBot(_manager, _manager.CommandService));
-            // _manager.AddBot(new IrcBot(_manager, _manager.CommandService));
+            _manager.AddBot(new DiscordBot(_manager));
+            _manager.AddBot(new IrcBot(_manager));
 
             Logger.Info($"{_manager.Bots.Count} sub-bots available", "CraftBot");
 

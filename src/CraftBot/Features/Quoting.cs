@@ -13,8 +13,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CraftBot.Repositories;
-using DSharpPlus.CommandsNext;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace CraftBot.Features
 {
@@ -23,17 +21,21 @@ namespace CraftBot.Features
         private readonly Regex _idPattern = new Regex("(>>[0-9]{18})", RegexOptions.Compiled);
         private readonly Regex _linkPattern = new Regex(@"http.:\/\/.*discordapp\.com\/channels\/([0-9]{18})\/([0-9]{18})\/([0-9]{18})", RegexOptions.Compiled);
 
-        private UserRepository UserRepository { get; set; }
-        private Statistics Statistics { get; set; }
+        public Quoting(UserRepository userRepository, Statistics statistics, LocalizationEngine localization)
+        {
+            _userRepository = userRepository;
+            _statistics = statistics;
+            _localization = localization;
+        }
+
+        private readonly UserRepository _userRepository;
+        private readonly Statistics _statistics;
+        private readonly LocalizationEngine _localization;
 
         protected override void Setup(DiscordClient client)
         {
             Client = client;
             client.MessageCreated += Client_MessageCreated;
-
-            var extension = client.GetExtension<CommandsNextExtension>();
-            UserRepository = extension.Services.GetService<UserRepository>();
-            Statistics = extension.Services.GetService<Statistics>();
         }
 
         private async Task Client_MessageCreated(MessageCreateEventArgs e)
@@ -41,37 +43,20 @@ namespace CraftBot.Features
             if (e.Author.IsBot)
                 return;
 
-            var data = UserRepository.Get(e.Author);
+            var data = _userRepository.Get(e.Author);
             var quotingEnabled = data.Features.HasFlag(UserFeatures.Quoting);
 
             var idMatches = _idPattern.Matches(e.Message.Content);
             var linkMatches = _linkPattern.Matches(e.Message.Content);
-
-            var commandsNext = e.Client.GetExtension<CommandsNextExtension>();
-            var language = data.GetLanguage((LocalizationEngine)commandsNext.Services.GetService(typeof(LocalizationEngine)));
+            var language = data.GetLanguage(_localization);
 
             if (!quotingEnabled)
             {
                 if (!idMatches.Any() && !linkMatches.Any())
                     return;
 
-                if (data.OneTimeNotices.HasFlag(OneTimeNotices.Quoting))
-                    return;
-
                 var member = await e.Guild.GetMemberAsync(e.Author.Id);
-                await member.SendMessageAsync(embed: new DiscordEmbedBuilder
-                {
-                    Color = Colors.Amber500,
-                    Title = language["quoting.notice.title"],
-                    Description = language["quoting.notice.description", "cb!user config quoting true"],
-                    Footer = new DiscordEmbedBuilder.EmbedFooter
-                    {
-                        Text = language["otn.footer"]
-                    }
-                });
-
-                data.OneTimeNotices |= OneTimeNotices.Quoting;
-                UserRepository.Save(data);
+                await SendOneTimeNotice(member, data, language);
 
                 return;
             }
@@ -97,10 +82,10 @@ namespace CraftBot.Features
 
                 if (!message.MessageType.HasValue || message.MessageType != MessageType.Default)
                     continue;
-                
-                // Program.Statistics.MessagesQuoted++;
+
                 var embed = await GetEmbedAsync(message);
                 await e.Message.RespondAsync(embed: embed);
+                _statistics.MessagesQuoted++;
 
                 // stop here
                 return;
@@ -176,16 +161,35 @@ namespace CraftBot.Features
                     return;
                 }
 
-                var quotingAuthorData = UserRepository.Get(message.Author);
+                var quotingAuthorData = _userRepository.Get(message.Author);
                 var content = quotingAuthorData.NotifyOnQuote ? message.Author.Mention : null;
 
                 var embed = await GetEmbedAsync(message);
                 await e.Message.RespondAsync(content, embed: embed);
-                Statistics.MessagesQuoted++;
+                _statistics.MessagesQuoted++;
 
                 // stop here
                 return;
             }
+        }
+
+        private async Task SendOneTimeNotice(DiscordMember member, UserData data, Language language)
+        {
+            if (data.OneTimeNotices.HasFlag(OneTimeNotices.Quoting))
+                return;
+            await member.SendMessageAsync(embed: new DiscordEmbedBuilder
+            {
+                Color = Colors.Amber500,
+                Title = language["quoting.notice.title"],
+                Description = language["quoting.notice.description", "cb!user config quoting true"],
+                Footer = new DiscordEmbedBuilder.EmbedFooter
+                {
+                    Text = language["otn.footer"]
+                }
+            });
+
+            data.OneTimeNotices |= OneTimeNotices.Quoting;
+            _userRepository.Save(data);
         }
 
         /// <summary>
@@ -229,8 +233,8 @@ namespace CraftBot.Features
                 return imageAttachment?.Url;
             }
 
-            var userData = UserRepository.Get(message.Author);
-            var color = await userData.GetColorAsync(Client, UserRepository);
+            var userData = _userRepository.Get(message.Author);
+            var color = await userData.GetColorAsync(Client, _userRepository);
 
             return new DiscordEmbedBuilder
             {

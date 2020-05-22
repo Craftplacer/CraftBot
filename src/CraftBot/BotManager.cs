@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using CraftBot.Common.Commands;
 using CraftBot.Localization;
 using LiteDB;
+using Microsoft.Extensions.DependencyInjection;
 using Qmmands;
 using Sentry;
 using Timer = System.Timers.Timer;
@@ -23,17 +24,12 @@ namespace CraftBot
 		private BsonMapper _bsonMapper;
 		private IDisposable _sentry;
 		private Timer _updateTimer;
-
+		
 		public BotManager()
 		{
 			_bots = new List<SubBot>();
 			_keepAlive = new CancellationTokenSource();
-
-			CommandService = new CommandService();
-			CommandService.AddModule<CommandModule>();
 		}
-		
-		public CommandService CommandService { get; }
 		
 		public LiteDatabase Database { get; private set; }
 		
@@ -45,6 +41,10 @@ namespace CraftBot
 
 		public Statistics Statistics { get; private set; }
 
+		public readonly Type[] CommonCommandModules = {
+			typeof(CommandModule)
+		};
+		
 		public void AddBot(SubBot bot)
 		{
 			_bots.Add(bot);
@@ -70,6 +70,9 @@ namespace CraftBot
 			{
 				Database.Checkpoint();
 				Logger.Verbose("Created database checkpoint", "CraftBot");
+				
+				if (!Database.Commit())
+					Logger.Warning("Database commit failed", "CraftBot");
 			};
 			StartTimer();
 
@@ -123,7 +126,7 @@ namespace CraftBot
 				EmptyStringToNull = true
 			};
 
-			Database = new LiteDatabase("data.db", _bsonMapper);
+			Database = new LiteDatabase(Path.Combine("data", "data.db"), _bsonMapper);
 		}
 
 		private void LoadConfig()
@@ -202,6 +205,30 @@ namespace CraftBot
 				Enabled = true
 			};
 			_updateTimer.Elapsed += (s, e) => Update?.Invoke(null, EventArgs.Empty);
+		}
+
+		public void PatchGenericCommands(CommandService service)
+		{
+			var existingCommands = service.GetAllCommands();
+			
+			foreach (var module in CommonCommandModules)
+			{
+				service.AddModule(module, builder =>
+				{
+					builder.Commands.RemoveAll(genericCommand =>
+					{
+						return existingCommands.SelectMany(command => command.Aliases)
+						                       .Intersect(genericCommand.Aliases)
+						                       .Any();
+					});
+				});
+			}
+		}
+
+		public void AddGlobalServices(ServiceCollection collection)
+		{
+			collection.AddSingleton(Localization);
+			collection.AddSingleton(Statistics);
 		}
 	}
 }

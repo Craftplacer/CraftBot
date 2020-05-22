@@ -1,53 +1,36 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using CraftBot.Discord;
 using CraftBot.Extensions;
 using CraftBot.Localization;
 using CraftBot.Repositories;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+using Disqord.Bot;
 using DSharpPlus.Entities;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32;
+using Qmmands;
 
-namespace CraftBot.Commands
+namespace CraftBot.Discord.Commands
 {
-    [Group("bot")]
-    public partial class BotCommands : BaseCommandModule
-    {
+	[Group("bot")]
+	public class BotCommandModule : ModuleBase<DiscordCommandContext>
+	{
         public LocalizationEngine Localization { get; set; }
         public UserRepository UserRepository { get; set; }
-
-        [Command("info")]
-        [Aliases("about")]
-        [GroupCommand]
-        public async Task Info(CommandContext context)
+        
+		[Command("", "info", "about")]
+        public async Task Info()
         {
-            var language = UserRepository.Get(context.User).GetLanguage(Localization);
-            var statistics = context.Services.GetService<Statistics>();
+            var language = UserRepository.Get(Context.User).GetLanguage(Localization);
+            var statistics = Context.ServiceProvider.GetService<Statistics>();
             
             string getMemoryUsage() => $"{Math.Round(GC.GetTotalMemory(false) / 1000000f, 2)} MB";
-            static string getOS()
-            {
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                {
-                    using var baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default);
-                    using var key = baseKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
-
-                    if (key != null)
-                        return (string)key.GetValue("ProductName");
-                }
-
-                return RuntimeInformation.OSDescription;
-            }
             async Task<string> getChangelogsLastUpdateAsync()
             {
-                using var webClient = new System.Net.WebClient();
+                using var webClient = new WebClient();
 
                 var file = await webClient.DownloadStringTaskAsync("https://gist.githubusercontent.com/Craftplacer/2e27cd05d485acf38aee1cedca5fabb9/raw/CraftBot%20Changelogs.md");
                 var lines = file.Split('\n');
@@ -60,28 +43,29 @@ namespace CraftBot.Commands
                 Color = Colors.Indigo500,
                 Author = new DiscordEmbedBuilder.EmbedAuthor
                 {
-                    IconUrl = context.Client.CurrentUser.AvatarUrl,
-                    Name = context.Client.CurrentUser.Username,
+                    IconUrl = Context.Client.CurrentUser.AvatarUrl,
+                    Name = Context.Client.CurrentUser.Username,
                     Url = "https://github.com/Craftplacer/CraftBot"
                 },
                 Description =
                     "Multi-purpose bot\n:warning: **Expect inconsistent uptime because of real-time debugging.**"
             };
                 
+            // {Emoji.IconCommand} {language.GetCounter(Context.Bot.RegisteredCommands.Count, "commands")}
+            
             embed.AddField(
                 language["bot.info.botinfo"],
-                @$"{Emoji.IconAccountGroup} {language.GetCounter(context.Client.Guilds.Count, "server")}
-                {Emoji.IconCommand} {language.GetCounter(context.CommandsNext.RegisteredCommands.Count, "commands")}
-                {Emoji.IconCircleDouble} {context.Client.Ping}ms
-                {Emoji.IconTextureBox} {language.GetCounter(context.Client.ShardCount, "shards")}",
+                @$"{Emoji.IconAccountGroup} {language.GetCounter(Context.Client.Guilds.Count, "server")}
+                {Emoji.IconCircleDouble} {Context.Client.Ping}ms
+                {Emoji.IconTextureBox} {language.GetCounter(Context.Client.ShardCount, "shards")}",
                 true
             );
             
             embed.AddField(
                 language["bot.info.appinfo"],
                 @$"{Emoji.IconClockOutline} {(DateTime.Now - statistics.CurrentStartTime).GetString(language)}
-                {Emoji.IconMonitor} {getOS()}
-                {Emoji.IconDsharpplus} v{context.Client.VersionString}
+                {Emoji.IconMonitor} {Helpers.GetOperatingSystem()}
+                {Emoji.IconDsharpplus} v{Context.Client.VersionString}
                 {Emoji.IconMemory} {getMemoryUsage()}",
                 true
             );
@@ -90,7 +74,7 @@ namespace CraftBot.Commands
             "[GitHub](https://github.com/Craftplacer/CraftBot)"
             );
 
-            var message = await context.RespondAsync(embed: embed);
+            var message = await Context.RespondAsync(embed);
             var lastUpdate = await getChangelogsLastUpdateAsync();
 
             const string changelogsGist = "https://gist.github.com/Craftplacer/2e27cd05d485acf38aee1cedca5fabb9";
@@ -98,14 +82,13 @@ namespace CraftBot.Commands
 
             await message.ModifyAsync(embed: embed.Build());
         }
-
-        [Command("contributors")]
-        [Aliases("translators", "credits")]
-        public async Task ShowContributors(CommandContext context)
+        
+        [Command("contributors","translators", "credits")]
+        public async Task ShowContributors()
         {
-            var language = UserRepository.Get(context.User).GetLanguage(Localization);
+            var language = UserRepository.Get(Context.User).GetLanguage(Localization);
 
-            var translators = GetTranslators(context);
+            var translators = GetTranslators();
             var embed = new DiscordEmbedBuilder().WithTitle(language["bot.info.contributors"])
                 .AddField("CraftBot", "Craftplacer#4006")
                 .AddField("Libraries", @"[DSharpPlus](https://github.com/DSharpPlus/DSharpPlus/)
@@ -113,44 +96,42 @@ namespace CraftBot.Commands
                                                     [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)", true)
                 .AddField("Translation & Localization", translators, true);
 
-            await context.RespondAsync(embed: embed);
+            await Context.RespondAsync(embed);
         }
 
-        private string GetTranslators(CommandContext context)
+        private string GetTranslators()
         {
             var builder = new StringBuilder();
 
             foreach (var language in Localization.Languages)
             {
-                var users = language.Authors.Select(async id => await context.Client.GetUserAsync(id)).Select((task) => task.Result);
-                var names = users.Select((user) => $"{user.Username}#{user.Discriminator}");
+                var users = language.Authors.Select(async id => await Context.Client.GetUserAsync(id)).Select(task => task.Result);
+                var names = users.Select(user => $"{user.Username}#{user.Discriminator}");
                 builder.AppendLine($"**{language.Name}**\n{string.Join(", ", names)}");
             }
 
             return builder.ToString();
         }
 
-        [Command("stop")]
-        [Aliases("shutdown")]
+        [Command("stop", "shutdown")]
         [Description("Shuts down CraftBot")]
-        [RequireOwner]
-        public async Task Stop(CommandContext context)
+        [BotOwnerOnly]
+        public async Task Stop()
         {
-            var bot = context.Services.GetService<DiscordBot>();
+            var bot = Context.ServiceProvider.GetService<DiscordBot>();
             
-            await context.Client.UpdateStatusAsync(new DiscordActivity("Shutting down..."), UserStatus.DoNotDisturb);
-            await context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👋"));
+            await Context.Client.UpdateStatusAsync(new DiscordActivity("Shutting down..."), UserStatus.DoNotDisturb);
+            await Context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("👋"));
 
             await bot.StopAsync();
         }
 
-        [Command("hopoff")]
-        [Aliases("detach")]
+        [Command("hopoff","detach")]
         [Description("Switches to a new non-debug instance.")]
-        [RequireOwner]
-        public async Task HopOff(CommandContext context)
+        [BotOwnerOnly]
+        public async Task HopOff()
         {
-            var bot = context.Services.GetService<DiscordBot>();
+            var bot = Context.ServiceProvider.GetService<DiscordBot>();
             
             var filePath = typeof(Program).Assembly.Location;
             var arguments = string.Join(' ', Environment.GetCommandLineArgs());
@@ -170,7 +151,7 @@ namespace CraftBot.Commands
                 ErrorDialog = true
             };
 
-            await context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("⏫"));
+            await Context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("⏫"));
 
             Process.Start(startInfo);
 
@@ -179,12 +160,12 @@ namespace CraftBot.Commands
 
         [Command("attach")]
         [Description("Attaches a debugger (e.g. Visual Studio)")]
-        [RequireOwner]
-        public async Task Attach(CommandContext context)
+        [BotOwnerOnly]
+        public async Task Attach()
         {
             if (Debugger.IsAttached)
             {
-                await context.RespondAsync(embed: new DiscordEmbedBuilder
+                await Context.RespondAsync(new DiscordEmbedBuilder
                 {
                     Color = Colors.Red500,
                     Title = "You already have a debugger attached.",
@@ -194,7 +175,7 @@ namespace CraftBot.Commands
                 return;
             }
 
-            var message = await context.RespondAsync(embed: new DiscordEmbedBuilder
+            var message = await Context.RespondAsync(new DiscordEmbedBuilder
             {
                 Color = Colors.LightBlue500,
                 Title = "Launching debugger...",
@@ -210,15 +191,14 @@ namespace CraftBot.Commands
             }.Build());
         }
 
-        [Command("break")]
-        [Aliases("pause")]
+        [Command("break", "pause")]
         [Description("Debugger.Break();")]
-        [RequireOwner]
-        public async Task Break(CommandContext context)
+        [BotOwnerOnly]
+        public async Task Break()
         {
             if (!Debugger.IsAttached)
             {
-                await context.RespondAsync(embed: new DiscordEmbedBuilder
+                await Context.RespondAsync(new DiscordEmbedBuilder
                 {
                     Color = Colors.Red500,
                     Title = "No debugger attached!",
@@ -228,21 +208,20 @@ namespace CraftBot.Commands
                 return;
             }
 
-            await context.Client.UpdateStatusAsync(new DiscordActivity("Breaking"), UserStatus.Idle);
-            await context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("⏸️"));
+            await Context.Client.UpdateStatusAsync(new DiscordActivity("Breaking"), UserStatus.Idle);
+            await Context.Message.CreateReactionAsync(DiscordEmoji.FromUnicode("⏸️"));
 
             Debugger.Break();
 
-            await context.Client.UpdateStatusAsync(new DiscordActivity("Awaking from debugger"), UserStatus.Online);
-            await context.Message.DeleteOwnReactionAsync(DiscordEmoji.FromUnicode("⏸️"));
+            await Context.Client.UpdateStatusAsync(new DiscordActivity("Awaking from debugger"), UserStatus.Online);
+            await Context.Message.DeleteOwnReactionAsync(DiscordEmoji.FromUnicode("⏸️"));
         }
 
-        [Command("statistics")]
-        [Aliases("stat", "stats")]
-        public async Task ViewStatistics(CommandContext context)
+        [Command("statistics","stat", "stats")]
+        public async Task ViewStatistics()
         {
-            var language = UserRepository.Get(context.User).GetLanguage(Localization);
-            var statistics = context.Services.GetService<Statistics>();
+            var language = UserRepository.Get(Context.User).GetLanguage(Localization);
+            var statistics = Context.ServiceProvider.GetService<Statistics>();
             
             var embed = new DiscordEmbedBuilder
             {
@@ -275,22 +254,7 @@ namespace CraftBot.Commands
                         (DateTime.Now - statistics.StartTime).GetString(language)]
                 );
 
-            await context.RespondAsync("graph.png", embed: embed);
-        }
-
-        [Command("embedtest")]
-        [RequireOwner]
-        public async Task EmbedTest(CommandContext context)
-        {
-            await context.RespondAsync(embed: new DiscordEmbedBuilder
-            {
-                Title = "Title" + Emoji.IconCloseCircle,
-                Author = new DiscordEmbedBuilder.EmbedAuthor
-                {
-                    IconUrl = context.Client.CurrentUser.AvatarUrl,
-                    Name = "Name " + Emoji.IconCloseCircle
-                }
-            });
+            await Context.RespondAsync(embed);
         }
     }
 }

@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 using CraftBot.Localization;
 
-using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 
@@ -121,9 +120,6 @@ namespace CraftBot.Extensions
 
             return language[key];
         }
-
-        public static Task RespondWithImageAsync(this CommandContext context, Image image, string filename) => RespondWithImageAsync(context.Message, image, filename);
-
         public static async Task RespondWithImageAsync(this DiscordMessage message, Image image, string filename)
         {
             using (var stream = new MemoryStream())

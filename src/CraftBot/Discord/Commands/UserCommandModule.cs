@@ -1,43 +1,38 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using CraftBot.Database;
 using CraftBot.Extensions;
 using CraftBot.Localization;
 using CraftBot.Model;
 using CraftBot.Repositories;
-
+using Disqord.Bot;
 using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
 using JetBrains.Annotations;
-
 using Newtonsoft.Json;
+using Qmmands;
 
-namespace CraftBot.Commands
+namespace CraftBot.Discord.Commands
 {
     [Group("user")]
-    public partial class UserCommands : BaseCommandModule
-    {
-        public LocalizationEngine Localization { get; set; }
+	public class UserCommandModule : ModuleBase<DiscordCommandContext>
+	{
+		public LocalizationEngine Localization { get; set; }
         public UserRepository UserRepository { get; set; }
 
-        [GroupCommand]
-        [Command("info")]
-        public async Task Info(CommandContext context, DiscordUser user = null)
+        [Command("", "info")]
+        public async Task Info(DiscordUser user = null)
         {
             if (user == null)
-                user = context.User;
+                user = Context.User;
 
             if (user.Discriminator == null)
             {
-                await context.RespondAsync(embed: new DiscordEmbedBuilder
+                await Context.RespondAsync(new DiscordEmbedBuilder
                 {
                     Color = Colors.Red500,
                     Title = "User not found",
@@ -52,8 +47,8 @@ namespace CraftBot.Commands
             var userLanguage = data.GetLanguage(Localization);
 
             // ReSharper disable once PossibleNullReferenceException : False-positive, look L30
-            var member = await context.Guild.TryGetMemberAsync(user.Id);
-            var color = await _getUserColorAsync(context.Client, member, data);
+            var member = await Context.Guild.TryGetMemberAsync(user.Id);
+            var color = await _getUserColorAsync(Context.Client, member, data);
 
             var embed = new DiscordEmbedBuilder
             {
@@ -69,7 +64,7 @@ namespace CraftBot.Commands
 
             _addUserFields(embed, user, member, data, userLanguage);
 
-            await context.RespondAsync(embed: embed);
+            await Context.RespondAsync(embed);
         }
 
         private async Task<DiscordColor> _getUserColorAsync(DiscordClient client, DiscordMember member, UserData data)
@@ -92,23 +87,25 @@ namespace CraftBot.Commands
             if (user.IsBot)
                 builder.Append(' ' + Emoji.IconCog);
 
-            if (member != null)
+            if (member == null)
+                return builder.ToString();
+            
+            
+            
+            if (member.IsOwner)
+                builder.Append(' ' + Emoji.IconStar);
+
+            if (member.VoiceState?.Channel != null)
             {
-                if (member.IsOwner)
-                    builder.Append(' ' + Emoji.IconStar);
+                if (member.VoiceState.IsServerMuted)
+                    builder.Append(' ' + Emoji.IconMicrophoneOffRed);
+                else if (member.VoiceState.IsSelfMuted)
+                    builder.Append(' ' + Emoji.IconMicrophoneOff);
 
-                if (member.VoiceState?.Channel != null)
-                {
-                    if (member.VoiceState.IsServerMuted)
-                        builder.Append(' ' + Emoji.IconMicrophoneOffRed);
-                    else if (member.VoiceState.IsSelfMuted)
-                        builder.Append(' ' + Emoji.IconMicrophoneOff);
-
-                    if (member.VoiceState.IsServerDeafened)
-                        builder.Append(' ' + Emoji.IconHeadphonesOffRed);
-                    else if (member.VoiceState.IsSelfDeafened)
-                        builder.Append(' ' + Emoji.IconHeadphonesOff);
-                }
+                if (member.VoiceState.IsServerDeafened)
+                    builder.Append(' ' + Emoji.IconHeadphonesOffRed);
+                else if (member.VoiceState.IsSelfDeafened)
+                    builder.Append(' ' + Emoji.IconHeadphonesOff);
             }
 
             return builder.ToString();
@@ -188,7 +185,7 @@ namespace CraftBot.Commands
             return builder.ToString();
         }
 
-        private string _getUserCreationDate([NotNull] DiscordUser user, Language userLanguage)
+        private static string _getUserCreationDate([NotNull] DiscordUser user, Language userLanguage)
         {
             if (user == null)
                 throw new ArgumentNullException(nameof(user));
@@ -222,12 +219,11 @@ namespace CraftBot.Commands
             return builder.ToString();
         }
 
-        [Command("biography")]
-        [Aliases("bio")]
+        [Command("biography", "bio")]
         [Description("Changes your profile biography.")]
-        public async Task ModifyBiography(CommandContext context, [RemainingText] string biography = null)
+        public async Task ModifyBiography([Remainder] string biography = null)
         {
-            var data = UserRepository.Get(context.User);
+            var data = UserRepository.Get(Context.User);
             var language = data.GetLanguage(Localization);
 
             if (string.IsNullOrWhiteSpace(biography))
@@ -235,25 +231,24 @@ namespace CraftBot.Commands
                 data.Biography = string.Empty;
                 UserRepository.Save(data);
 
-                await context.RespondAsync(
-                    embed: new DiscordEmbedBuilder().WithDescription(language["user.bio.remove"]));
+                await Context.RespondAsync(
+                    new DiscordEmbedBuilder().WithDescription(language["user.bio.remove"]));
             }
             else
             {
                 data.Biography = biography;
                 UserRepository.Save(data);
 
-                await context.RespondAsync(
-                    embed: new DiscordEmbedBuilder().WithDescription($"{language["user.bio.set"]}\n>>> {biography}"));
+                await Context.RespondAsync(
+                    new DiscordEmbedBuilder().WithDescription($"{language["user.bio.set"]}\n>>> {biography}"));
             }
         }
 
-        [Command("image")]
-        [Aliases("img", "picture", "pic")]
+        [Command("image", "img", "picture", "pic")]
         [Description("Changes your profile picture.")]
-        public async Task ModifyImage(CommandContext context, string imageUrl = null)
+        public async Task ModifyImage(string imageUrl = null)
         {
-            var data = UserRepository.Get(context.User);
+            var data = UserRepository.Get(Context.User);
             var language = data.GetLanguage(Localization);
 
             if (string.IsNullOrWhiteSpace(imageUrl))
@@ -261,15 +256,15 @@ namespace CraftBot.Commands
                 data.Image = string.Empty;
                 UserRepository.Save(data);
 
-                await context.RespondAsync(
-                    embed: new DiscordEmbedBuilder().WithDescription(language["user.image.remove"]));
+                await Context.RespondAsync(
+                    new DiscordEmbedBuilder().WithDescription(language["user.image.remove"]));
             }
             else
             {
                 data.Image = imageUrl;
                 UserRepository.Save(data);
 
-                await context.RespondAsync(embed: new DiscordEmbedBuilder
+                await Context.RespondAsync(new DiscordEmbedBuilder
                 {
                     Description = language["user.image.set"],
                     ImageUrl = imageUrl
@@ -277,12 +272,11 @@ namespace CraftBot.Commands
             }
         }
 
-        [Command("color")]
-        [Aliases("clr")]
+        [Command("color", "clr")]
         [Description("Changes your profile color.")]
-        public async Task ModifyColor(CommandContext context, DiscordColor? color = null)
+        public async Task ModifyColor(DiscordColor? color = null)
         {
-            var data = UserRepository.Get(context.User);
+            var data = UserRepository.Get(Context.User);
             var language = data.GetLanguage(Localization);
 
             if (color.HasValue)
@@ -290,7 +284,7 @@ namespace CraftBot.Commands
                 data.ColorHex = color.Value.ToString();
                 UserRepository.Save(data);
 
-                await context.RespondAsync(embed: new DiscordEmbedBuilder
+                await Context.RespondAsync(new DiscordEmbedBuilder
                 {
                     Color = color.Value,
                     Description = language["user.color.set", $"**`{data.ColorHex}`**"]
@@ -301,35 +295,33 @@ namespace CraftBot.Commands
                 data.ColorHex = null;
                 UserRepository.Save(data);
 
-                await context.RespondAsync(embed: new DiscordEmbedBuilder
+                await Context.RespondAsync(new DiscordEmbedBuilder
                 {
                     Description = language["user.color.remove"],
-                    Color = await data.GetColorAsync(context.Client, UserRepository)
+                    Color = await data.GetColorAsync(Context.Client, UserRepository)
                 });
             }
         }
 
-        public async Task ClearGender(CommandContext context)
+        public async Task ClearGender()
         {
-            var data = UserRepository.Get(context.User);
+            var data = UserRepository.Get(Context.User);
 
             data.Gender = null;
             UserRepository.Save(data);
 
-            await context.RespondAsync(embed: new DiscordEmbedBuilder
+            await Context.RespondAsync(new DiscordEmbedBuilder
             {
                 Description = "Your gender has been cleared"
             });
         }
 
-        [Command("gender")]
-        [Aliases("sex")]
+        [Command("gender", "sex")]
         [Description("Changes your profile gender.")]
-        public async Task ModifyGender(CommandContext context,
-            [Description("Which gender that should be set on your profile, e.g. 'male' or 'female'")]
-            string gender)
+        public async Task ModifyGender([Description("Which gender that should be set on your profile, e.g. 'male' or 'female'")]
+                                       string gender)
         {
-            var data = UserRepository.Get(context.User);
+            var data = UserRepository.Get(Context.User);
             Gender? g = null;
 
             if (new[] { "m", "male", "boy", "man" }.Any(str => gender.Equals(str, StringComparison.OrdinalIgnoreCase)))
@@ -346,7 +338,7 @@ namespace CraftBot.Commands
             {
                 data.Gender = g;
 
-                await context.RespondAsync(embed: new DiscordEmbedBuilder
+                await Context.RespondAsync(new DiscordEmbedBuilder
                 {
                     Description = $"Your gender has been set to {data.Gender}"
                 });
@@ -355,7 +347,7 @@ namespace CraftBot.Commands
             }
             else
             {
-                await context.RespondAsync(embed: new DiscordEmbedBuilder
+                await Context.RespondAsync(new DiscordEmbedBuilder
                 {
                     Description = "The gender specified is unknown"
                 });
@@ -364,14 +356,14 @@ namespace CraftBot.Commands
 
         [Command("birthday")]
         [Description("Clears your birthday.")]
-        public async Task ClearBirthday(CommandContext context)
+        public async Task ClearBirthday()
         {
-            var data = UserRepository.Get(context.User);
+            var data = UserRepository.Get(Context.User);
             var language = data.GetLanguage(Localization);
             data.Birthday = null;
             UserRepository.Save(data);
 
-            await context.RespondAsync(embed: new DiscordEmbedBuilder
+            await Context.RespondAsync(new DiscordEmbedBuilder
             {
                 Description = language["user.birthday.clear"]
             });
@@ -379,14 +371,14 @@ namespace CraftBot.Commands
 
         [Command("birthday")]
         [Description("Changes your birthday.")]
-        public async Task ChangeBirthday(CommandContext context, int day, int month, int year = 1)
+        public async Task ChangeBirthday(int day, int month, int year = 1)
         {
-            var data = UserRepository.Get(context.User);
+            var data = UserRepository.Get(Context.User);
             var language = data.GetLanguage(Localization);
             data.Birthday = new DateTime(year, month, day);
             UserRepository.Save(data);
 
-            await context.RespondAsync(embed: new DiscordEmbedBuilder
+            await Context.RespondAsync(new DiscordEmbedBuilder
             {
                 Description = language["user.birthday.set",
                     data.Birthday.Value.ToString(language.CultureInfo.DateTimeFormat)]
@@ -395,11 +387,11 @@ namespace CraftBot.Commands
 
         [Command("language")]
         [Description("Changes your language.")]
-        public async Task ListLanguages(CommandContext context)
+        public async Task ListLanguages()
         {
-            var language = UserRepository.Get(context.User).GetLanguage(Localization);
+            var language = UserRepository.Get(Context.User).GetLanguage(Localization);
 
-            await context.RespondAsync(embed: new DiscordEmbedBuilder
+            await Context.RespondAsync(new DiscordEmbedBuilder
             {
                 Title = language["language.list.title"],
                 Description = $"{language["language.list.description"]}\n\n{_getLanguageList()}",
@@ -407,7 +399,7 @@ namespace CraftBot.Commands
                 {
                     Text = language[
                         "language.list.contribute",
-                        context.Client.CurrentApplication.Team.Members[0].User.ToFriendlyString()
+                        Context.Client.CurrentApplication.Team.Members[0].User.ToFriendlyString()
                     ]
                 }
             });
@@ -427,20 +419,19 @@ namespace CraftBot.Commands
             return builder.ToString();
         }
 
-        [Command("language")]
-        [Aliases("lang")]
+        [Command("language", "lang")]
         [Description("Changes your language.")]
-        public async Task ChangeLanguage(CommandContext context, string code)
+        public async Task ChangeLanguage(string code)
         {
             code = code.ToLowerInvariant();
 
-            var data = UserRepository.Get(context.User);
+            var data = UserRepository.Get(Context.User);
             var language = data.GetLanguage(Localization);
             var newLanguage = Localization.GetLanguage(code);
 
             if (newLanguage == null)
             {
-                await context.RespondAsync(embed: new DiscordEmbedBuilder
+                await Context.RespondAsync(new DiscordEmbedBuilder
                 {
                     Color = Colors.Red500,
                     Title = language["language.notfound.title"],
@@ -453,12 +444,12 @@ namespace CraftBot.Commands
             data.Language = newLanguage.Code;
             UserRepository.Save(data);
 
-            await context.RespondAsync(embed: new DiscordEmbedBuilder
+            await Context.RespondAsync(new DiscordEmbedBuilder
             {
                 Color = Colors.LightGreen500,
                 Title = newLanguage["greeting"],
                 Description = newLanguage["language.set", newLanguage.Name,
-                    await _getAuthorList(context.Client, newLanguage.Authors)]
+                    await _getAuthorList(Context.Client, newLanguage.Authors)]
             });
         }
 
@@ -479,17 +470,17 @@ namespace CraftBot.Commands
 
         [Command("export")]
         [Description("This command gives the user the ability to export their data from CraftBot.")]
-        [RequireDirectMessage]
-        public async Task Export(CommandContext context)
+        [PrivateOnly]
+        public async Task Export()
         {
-            var data = UserRepository.Get(context.User);
+            var data = UserRepository.Get(Context.User);
             var json = JsonConvert.SerializeObject(data);
             var array = Encoding.UTF8.GetBytes(json);
 
             await using var stream = new MemoryStream(array);
 
-            var filename = $"Data of {context.User.Username} ({context.User.Id}).json";
-            await context.RespondWithFileAsync(filename, stream);
+            var filename = $"Data of {Context.User.Username} ({Context.User.Id}).json";
+            await Context.Message.RespondWithFileAsync(filename, stream);
         }
-    }
+	}
 }

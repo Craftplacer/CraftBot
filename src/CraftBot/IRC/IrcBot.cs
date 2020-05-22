@@ -1,5 +1,5 @@
+using System.Linq;
 using System.Threading.Tasks;
-using CraftBot.Common;
 using Craftplacer.IRC;
 using Craftplacer.IRC.Events;
 using JetBrains.Annotations;
@@ -9,19 +9,35 @@ namespace CraftBot.IRC
 {
 	public class IrcBot : SubBot
 	{
-		public const string Nickname = "CraftBot";
 		private IrcClient _ircClient;
 		private readonly CommandService _commandService;
-		
-		public IrcBot([NotNull] BotManager manager, CommandService commandService) : base(manager)
+		private IrcHostInformation _currentHost;
+
+		public IrcBot([NotNull] BotManager manager) : base(manager)
 		{
-			_commandService = commandService;
+			_commandService = new CommandService();
+
+			foreach (var module in manager.CommonCommandModules)
+				_commandService.AddModule(module);
+			
+			_commandService.AddModule<IrcCommandModule>();
 		}
 
 		public override async Task InitializeAsync()
 		{
+			_currentHost = Manager.Config.IrcHosts?.SingleOrDefault();
+			
 			_ircClient = new IrcClient();
 			_ircClient.MessageReceived += IrcClientOnMessageReceived;
+			_ircClient.Welcome += IrcClientOnWelcome;
+		}
+
+		private async Task IrcClientOnWelcome(IrcEventArgs e)
+		{
+			if (string.IsNullOrWhiteSpace(_currentHost.NickServPassword))
+				return;
+
+			await e.Client.SendMessageAsync("NickServ", $"IDENTIFY {_currentHost.NickServPassword}");
 		}
 
 		private async Task IrcClientOnMessageReceived(MessageReceivedEventArgs e)
@@ -29,18 +45,20 @@ namespace CraftBot.IRC
 			if (!CommandUtilities.HasPrefix(e.Message.Message, Manager.Config.Prefix, out var output))
 				return;
 
-			var commonMessage = new CommonIrcMessage(e.Message);
-			var context = new CommonCommandContext(commonMessage);
+			var context = new IrcCommandContext(e.Message);
 			var result = await _commandService.ExecuteAsync(output, context);
 			
-			//if (result is FailedResult failedResult)
-			//	await message.Channel.SendMessageAsync(failedResult.Reason);
+			if (result is FailedResult failedResult)
+				await e.Message.RespondAsync($"{e.Message.Author.Nickname}: oh no your command failed ;w; {failedResult.Reason}");
 		}
 
 		public override async Task ConnectAsync()
 		{
+			if (_currentHost == null)
+				return;
+			
 			Logger.Info("Connecting to IRC...", "CraftBot");
-			await _ircClient.ConnectAsync("irc.hash1da.com", 6969, Nickname, Nickname);
+			await _ircClient.ConnectAsync(_currentHost.Host, _currentHost.Port, _currentHost.Nickname, _currentHost.Nickname);
 		}
 
 		public override async Task StopAsync()

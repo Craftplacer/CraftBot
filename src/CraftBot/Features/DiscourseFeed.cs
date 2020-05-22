@@ -93,7 +93,7 @@ namespace CraftBot.Features
                     embeds.Add(embed);
                 }
 
-                if (embeds.Count > 0)
+                if (embeds.Any())
                 {
                     var builder = new DiscordWebhookBuilder();
                     builder.AddEmbeds(embeds);

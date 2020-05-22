@@ -1,0 +1,74 @@
+[Command("spacify")]
+[Aliases("space")]
+[Description("be gone dashes")]
+[RequirePermissions(Permissions.ManageChannels)]
+public async Task Spacify(CommandContext context, DiscordChannel channel = null)
+{
+    if (channel == null)
+        channel = context.Channel;
+
+    var newName = channel.Name.Replace('-', '\u2009');
+
+    if (newName == channel.Name)
+    {
+        await context.RespondAsync(embed: new DiscordEmbedBuilder()
+        {
+            Color = Colors.Red500,
+            Description = "The channel's name is already spaced out."
+        });
+    }
+    else
+    {
+        await channel.ModifyAsync((model) => model.Name = newName);
+
+        await context.RespondAsync(embed: new DiscordEmbedBuilder()
+        {
+            Color = Colors.LightGreen500,
+            Description = "The channel's name has been spaced out"
+        });
+    }
+}
+
+[Command("spacify")]
+public async Task Spacify(CommandContext context, [Description("Tip: Specify '*' as argument to spacify your whole server.")] string all)
+{
+    if (all != "*")
+        return;
+
+    var message = await context.RespondAsync(embed: new DiscordEmbedBuilder()
+    {
+        Color = Colors.LightBlue500,
+        Title = "Spacify",
+        Description = "Renaming channels..."
+    });
+
+    try
+    {
+        foreach (var channel in context.Guild.Channels.Values)
+        {
+            if (channel.IsCategory)
+                continue;
+
+            var newName = channel.Name.Replace('-', '\u2009');
+
+            if (newName != channel.Name)
+                await channel.ModifyAsync((model) => model.Name = newName);
+        }
+
+        await message.ModifyAsync(embed: new DiscordEmbedBuilder()
+        {
+            Color = Colors.LightGreen500,
+            Title = "Spacify",
+            Description = "All channels have been renamed!"
+        }.Build());
+    }
+    catch (UnauthorizedException ex)
+    {
+        await message.ModifyAsync(embed: new DiscordEmbedBuilder()
+        {
+            Color = Colors.Red500,
+            Title = "Spacify",
+            Description = "CraftBot failed to rename a channel because of missing permissions."
+        }.Build());
+    }
+}

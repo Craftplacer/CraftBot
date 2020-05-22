@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using CraftBot.Localization;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using Sentry;
 
@@ -67,6 +69,20 @@ namespace CraftBot
             var path = Path.Combine("lang", language.Code + ".json");
 
             File.WriteAllText(path, json);
+        }
+
+        public static string GetOperatingSystem()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                using var baseKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Default);
+                using var key = baseKey.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
+
+                if (key != null)
+                    return (string)key.GetValue("ProductName");
+            }
+
+            return RuntimeInformation.OSDescription;
         }
     }
 }

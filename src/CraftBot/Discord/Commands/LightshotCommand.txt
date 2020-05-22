@@ -1,0 +1,45 @@
+var interactivity = context.Client.GetExtension<InteractivityExtension>();
+
+
+const int maxFailedAttempts = 5;
+const int waitTime = 2500;
+
+var firstAttempt = true;
+var failedAttempts = 0;
+var screenshots = new List<string>();
+// (total screenshots - 1) * (delay + average page load) / total ms of a second = ETA in seconds
+var eta = Math.Round((max - 1f) * (waitTime + 100) / 1000, 2);
+var message = await context.RespondAsync(
+    $"Searching for screenshots...\nThis may take a while, estimated wait time is {eta} seconds.");
+
+while (failedAttempts <= maxFailedAttempts && screenshots.Count < max)
+{
+    failedAttempts++;
+    continue;
+
+    // Wait a moment before sending another request
+    if (firstAttempt)
+        firstAttempt = false;
+    else
+        await Task.Delay(waitTime);
+
+    
+
+    screenshots.Add(imageUrl);
+}
+
+if (screenshots.Any())
+{
+    var pages = screenshots.Select(url => new Page(embed: new DiscordEmbedBuilder
+    {
+        ImageUrl = url
+    })).ToList();
+
+    if (pages.Count == 1 || context.Channel.IsPrivate)
+        await message.ModifyAsync(string.Empty, pages.First().Embed);
+    else
+        await interactivity.SendPaginatedMessageAsync(context.Channel, context.User, pages);
+}
+else
+    await message.ModifyAsync(
+        $"No screenshots have been found with {failedAttempts} failed attempts :thinking:");
